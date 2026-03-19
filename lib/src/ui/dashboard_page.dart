@@ -54,9 +54,13 @@ class DashboardPage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Material(
-                            color: service.status == ServiceStatus.running
-                              ? colorScheme.error.withAlpha(((0.08).clamp(0.0, 1.0) * 255).round())
-                              : colorScheme.secondary.withAlpha(((0.12).clamp(0.0, 1.0) * 255).round()),
+                          color: service.status == ServiceStatus.running
+                              ? colorScheme.error.withAlpha(
+                                  ((0.08).clamp(0.0, 1.0) * 255).round(),
+                                )
+                              : colorScheme.secondary.withAlpha(
+                                  ((0.12).clamp(0.0, 1.0) * 255).round(),
+                                ),
                           borderRadius: BorderRadius.circular(24),
                           child: InkWell(
                             onTap: service.status == ServiceStatus.running
@@ -70,9 +74,13 @@ class DashboardPage extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: service.status == ServiceStatus.running
-                                      ? colorScheme.error.withAlpha(((0.2).clamp(0.0, 1.0) * 255).round())
-                                      : colorScheme.secondary.withAlpha(((0.3).clamp(0.0, 1.0) * 255).round()),
+                                  color: service.status == ServiceStatus.running
+                                      ? colorScheme.error.withAlpha(
+                                          ((0.2).clamp(0.0, 1.0) * 255).round(),
+                                        )
+                                      : colorScheme.secondary.withAlpha(
+                                          ((0.3).clamp(0.0, 1.0) * 255).round(),
+                                        ),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(24),
@@ -118,10 +126,14 @@ class DashboardPage extends StatelessWidget {
                 // Glassmorphism Status Card
                 Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.surface.withAlpha(((0.4).clamp(0.0, 1.0) * 255).round()),
+                    color: colorScheme.surface.withAlpha(
+                      ((0.4).clamp(0.0, 1.0) * 255).round(),
+                    ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: colorScheme.onSurface.withAlpha(((0.08).clamp(0.0, 1.0) * 255).round()),
+                      color: colorScheme.onSurface.withAlpha(
+                        ((0.08).clamp(0.0, 1.0) * 255).round(),
+                      ),
                     ),
                   ),
                   clipBehavior: Clip.antiAlias,
@@ -142,7 +154,9 @@ class DashboardPage extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.secondary.withAlpha(((0.1).clamp(0.0, 1.0) * 255).round()),
+                                      color: colorScheme.secondary.withAlpha(
+                                        ((0.1).clamp(0.0, 1.0) * 255).round(),
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
@@ -158,7 +172,9 @@ class DashboardPage extends StatelessWidget {
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 1.5,
-                                      color: colorScheme.onSurface.withAlpha(((0.5).clamp(0.0, 1.0) * 255).round()),
+                                      color: colorScheme.onSurface.withAlpha(
+                                        ((0.5).clamp(0.0, 1.0) * 255).round(),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -186,7 +202,9 @@ class DashboardPage extends StatelessWidget {
                               Text(
                                 l10n.webAdmin,
                                 style: TextStyle(
-                                  color: colorScheme.onSurface.withAlpha(((0.4).clamp(0.0, 1.0) * 255).round()),
+                                  color: colorScheme.onSurface.withAlpha(
+                                    ((0.4).clamp(0.0, 1.0) * 255).round(),
+                                  ),
                                   fontSize: 13,
                                 ),
                               ),
@@ -199,10 +217,14 @@ class DashboardPage extends StatelessWidget {
                         width: 160,
                         height: 180, // Fixed height instead of stretching
                         decoration: BoxDecoration(
-                          color: colorScheme.onSurface.withAlpha(((0.03).clamp(0.0, 1.0) * 255).round()),
+                          color: colorScheme.onSurface.withAlpha(
+                            ((0.03).clamp(0.0, 1.0) * 255).round(),
+                          ),
                           border: Border(
                             left: BorderSide(
-                              color: colorScheme.onSurface.withAlpha(((0.05).clamp(0.0, 1.0) * 255).round()),
+                              color: colorScheme.onSurface.withAlpha(
+                                ((0.05).clamp(0.0, 1.0) * 255).round(),
+                              ),
                             ),
                           ),
                         ),
@@ -214,7 +236,9 @@ class DashboardPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withAlpha(((0.1).clamp(0.0, 1.0) * 255).round()),
+                                  color: Colors.black.withAlpha(
+                                    ((0.1).clamp(0.0, 1.0) * 255).round(),
+                                  ),
                                   blurRadius: 20,
                                   spreadRadius: 5,
                                 ),
@@ -249,16 +273,20 @@ class DashboardPage extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: Divider(
-                          color: colorScheme.onSurface.withAlpha(((0.1).clamp(0.0, 1.0) * 255).round()),
-                          thickness: 1,
+                        color: colorScheme.onSurface.withAlpha(
+                          ((0.1).clamp(0.0, 1.0) * 255).round(),
                         ),
+                        thickness: 1,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Text(
                       '${service.logs.length} EVENTS',
                       style: GoogleFonts.firaCode(
                         fontSize: 10,
-                        color: colorScheme.onSurface.withAlpha(((0.4).clamp(0.0, 1.0) * 255).round()),
+                        color: colorScheme.onSurface.withAlpha(
+                          ((0.4).clamp(0.0, 1.0) * 255).round(),
+                        ),
                       ),
                     ),
                   ],
@@ -288,7 +316,9 @@ class DashboardPage extends StatelessWidget {
         label = 'SYNCING';
         break;
       case ServiceStatus.stopped:
-        color = colorScheme.onSurface.withAlpha(((0.3).clamp(0.0, 1.0) * 255).round());
+        color = colorScheme.onSurface.withAlpha(
+          ((0.3).clamp(0.0, 1.0) * 255).round(),
+        );
         label = 'IDLE';
         break;
     }
@@ -297,7 +327,9 @@ class DashboardPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withAlpha(((0.08).clamp(0.0, 1.0) * 255).round()),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withAlpha(((0.2).clamp(0.0, 1.0) * 255).round())),
+        border: Border.all(
+          color: color.withAlpha(((0.2).clamp(0.0, 1.0) * 255).round()),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -311,7 +343,9 @@ class DashboardPage extends StatelessWidget {
               boxShadow: [
                 if (status == ServiceStatus.running)
                   BoxShadow(
-                    color: color.withAlpha(((0.6).clamp(0.0, 1.0) * 255).round()),
+                    color: color.withAlpha(
+                      ((0.6).clamp(0.0, 1.0) * 255).round(),
+                    ),
                     blurRadius: 8,
                     spreadRadius: 1,
                   ),

@@ -104,7 +104,10 @@ class _ConfigPageState extends State<ConfigPage> {
                   binaryPath: _pathController.text,
                   arguments: _argsController.text,
                 );
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.save)));
+                if (mounted)
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(l10n.save)));
               }
             },
             child: Text(l10n.save),
@@ -129,16 +132,31 @@ class _ConfigPageState extends State<ConfigPage> {
                   onTap: () => service.setTheme(mode),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? theme.colorScheme.secondary : theme.colorScheme.primaryContainer,
+                      color: isSelected
+                          ? theme.colorScheme.secondary
+                          : theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected ? theme.colorScheme.secondary : Colors.transparent,
+                        color: isSelected
+                            ? theme.colorScheme.secondary
+                            : Colors.transparent,
                         width: 2,
                       ),
-                        boxShadow: isSelected
-                          ? [BoxShadow(color: theme.colorScheme.secondary.withAlpha(((0.3).clamp(0.0, 1.0) * 255).round()), blurRadius: 8, spreadRadius: 1)]
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: theme.colorScheme.secondary.withAlpha(
+                                  ((0.3).clamp(0.0, 1.0) * 255).round(),
+                                ),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              ),
+                            ]
                           : [],
                     ),
                     child: Row(
@@ -147,14 +165,18 @@ class _ConfigPageState extends State<ConfigPage> {
                         Icon(
                           Icons.palette_outlined,
                           size: 18,
-                          color: isSelected ? theme.colorScheme.onSecondary : theme.colorScheme.onPrimaryContainer,
+                          color: isSelected
+                              ? theme.colorScheme.onSecondary
+                              : theme.colorScheme.onPrimaryContainer,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           mode.name.toUpperCase(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? theme.colorScheme.onSecondary : theme.colorScheme.onPrimaryContainer,
+                            color: isSelected
+                                ? theme.colorScheme.onSecondary
+                                : theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ],

@@ -26,7 +26,6 @@ class _WebViewPageState extends State<WebViewPage> {
   win_wv.WebviewController? _winController;
   bool _winReady = false;
   bool _winError = false;
-  
 
   bool _isLoading = true;
 
@@ -139,7 +138,9 @@ class _WebViewPageState extends State<WebViewPage> {
         alignment: Alignment.topRight,
         margin: const EdgeInsets.only(top: 12, right: 12),
         child: Material(
-          color: colorScheme.surface.withAlpha(((0.7).clamp(0.0, 1.0) * 255).round()),
+          color: colorScheme.surface.withAlpha(
+            ((0.7).clamp(0.0, 1.0) * 255).round(),
+          ),
           borderRadius: BorderRadius.circular(16),
           elevation: 2,
           child: Row(
@@ -150,7 +151,9 @@ class _WebViewPageState extends State<WebViewPage> {
                   Remix.arrow_left_s_line,
                   color: canBack
                       ? colorScheme.secondary
-                      : colorScheme.onSurface.withAlpha(((0.2).clamp(0.0, 1.0) * 255).round()),
+                      : colorScheme.onSurface.withAlpha(
+                          ((0.2).clamp(0.0, 1.0) * 255).round(),
+                        ),
                 ),
                 tooltip: l10n.goToDashboard,
                 onPressed: canBack ? onBack : null,
@@ -160,7 +163,9 @@ class _WebViewPageState extends State<WebViewPage> {
                   Remix.arrow_right_s_line,
                   color: canForward
                       ? colorScheme.secondary
-                      : colorScheme.onSurface.withAlpha(((0.2).clamp(0.0, 1.0) * 255).round()),
+                      : colorScheme.onSurface.withAlpha(
+                          ((0.2).clamp(0.0, 1.0) * 255).round(),
+                        ),
                 ),
                 tooltip: l10n.goToDashboard,
                 onPressed: canForward ? onForward : null,
@@ -284,7 +289,9 @@ class _WebViewPageState extends State<WebViewPage> {
                 if (_winError)
                   Positioned.fill(
                     child: Container(
-                      color: Colors.black.withAlpha(((0.45).clamp(0.0, 1.0) * 255).round()),
+                      color: Colors.black.withAlpha(
+                        ((0.45).clamp(0.0, 1.0) * 255).round(),
+                      ),
                       child: Center(
                         child: Material(
                           color: colorScheme.surface,
@@ -314,7 +321,8 @@ class _WebViewPageState extends State<WebViewPage> {
                                       onPressed: widget.onGoToDashboard,
                                       child: const Text('Back'),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorScheme.surfaceVariant,
+                                        backgroundColor:
+                                            colorScheme.surfaceVariant,
                                         foregroundColor: colorScheme.onSurface,
                                       ),
                                     ),

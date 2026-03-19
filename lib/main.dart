@@ -17,7 +17,7 @@ import 'dart:io';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Single Instance Check (Windows only)
   if (Platform.isWindows) {
     await WindowsSingleInstance.ensureSingleInstance(
@@ -51,13 +51,8 @@ void main(List<String> args) async {
 
   final service = ServiceManager();
   await service.init();
-  
-  runApp(
-    ChangeNotifierProvider.value(
-      value: service,
-      child: const MainApp(),
-    ),
-  );
+
+  runApp(ChangeNotifierProvider.value(value: service, child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -66,7 +61,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final service = context.watch<ServiceManager>();
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'PicoClaw',
@@ -92,7 +87,8 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> with TrayListener, WindowListener {
+class _MainShellState extends State<MainShell>
+    with TrayListener, WindowListener {
   int _selectedIndex = 0;
 
   @override
@@ -101,7 +97,7 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
     windowManager.addListener(this);
     trayManager.addListener(this);
     if (!Platform.isAndroid && !Platform.isIOS) {
-       _initTray();
+      _initTray();
     }
   }
 
@@ -118,13 +114,10 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
     } catch (e) {
       debugPrint('Tray icon error: $e');
     }
-    
+
     Menu menu = Menu(
       items: [
-        MenuItem(
-          key: 'show_window',
-          label: l10n.showWindow,
-        ),
+        MenuItem(key: 'show_window', label: l10n.showWindow),
         MenuItem.separator(),
         MenuItem(
           key: 'start_service',
@@ -137,10 +130,7 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
           disabled: service.status == ServiceStatus.stopped,
         ),
         MenuItem.separator(),
-        MenuItem(
-          key: 'exit_app',
-          label: l10n.exit,
-        ),
+        MenuItem(key: 'exit_app', label: l10n.exit),
       ],
     );
     await trayManager.setContextMenu(menu);
@@ -167,46 +157,60 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
   Widget build(BuildContext context) {
     // Re-init tray when status changes to update menu (disabled states)
     context.watch<ServiceManager>();
-    _initTray(); 
-    
+    _initTray();
+
     final bool isWide = MediaQuery.of(context).size.width > 900;
-    final bool isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Scaffold(
       body: Row(
         children: [
           if (isWide && !isPortrait)
             Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-              ),
+              decoration: BoxDecoration(color: colorScheme.surface),
               child: NavigationRail(
-                extended: false, 
+                extended: false,
                 minWidth: 104, // Slightly wider for better spacing
-                backgroundColor: Colors.transparent, 
-                indicatorColor: colorScheme.secondary.withAlpha(((0.08).clamp(0.0, 1.0) * 255).round()), // Very subtle indicator
-                indicatorShape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero), 
-                unselectedIconTheme: IconThemeData(color: colorScheme.onSurface.withAlpha(((0.4).clamp(0.0, 1.0) * 255).round()), size: 24),
-                selectedIconTheme: IconThemeData(color: colorScheme.secondary, size: 24),
+                backgroundColor: Colors.transparent,
+                indicatorColor: colorScheme.secondary.withAlpha(
+                  ((0.08).clamp(0.0, 1.0) * 255).round(),
+                ), // Very subtle indicator
+                indicatorShape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: colorScheme.onSurface.withAlpha(
+                    ((0.4).clamp(0.0, 1.0) * 255).round(),
+                  ),
+                  size: 24,
+                ),
+                selectedIconTheme: IconThemeData(
+                  color: colorScheme.secondary,
+                  size: 24,
+                ),
                 unselectedLabelTextStyle: TextStyle(
-                  color: colorScheme.onSurface.withAlpha(((0.4).clamp(0.0, 1.0) * 255).round()), 
-                  fontSize: 10, 
+                  color: colorScheme.onSurface.withAlpha(
+                    ((0.4).clamp(0.0, 1.0) * 255).round(),
+                  ),
+                  fontSize: 10,
                   letterSpacing: 1.2,
                   fontWeight: FontWeight.w500,
                   height: 2.2,
                 ),
                 selectedLabelTextStyle: TextStyle(
-                  color: colorScheme.secondary, 
-                  fontWeight: FontWeight.w700, 
-                  fontSize: 10, 
+                  color: colorScheme.secondary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
                   letterSpacing: 1.2,
                   height: 2.2,
                 ),
                 labelType: NavigationRailLabelType.all,
                 selectedIndex: _selectedIndex,
-                onDestinationSelected: (idx) => setState(() => _selectedIndex = idx),
-                leading: const SizedBox(height: 48), 
+                onDestinationSelected: (idx) =>
+                    setState(() => _selectedIndex = idx),
+                leading: const SizedBox(height: 48),
                 destinations: const [
                   NavigationRailDestination(
                     icon: Icon(Remix.command_line), // More tech/minimal
@@ -219,7 +223,9 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
                     label: Text('NETWORK'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Remix.equalizer_2_line), // More tech setting icon
+                    icon: Icon(
+                      Remix.equalizer_2_line,
+                    ), // More tech setting icon
                     selectedIcon: Icon(Remix.equalizer_2_fill),
                     label: Text('PRESETS'),
                   ),
@@ -257,11 +263,19 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
       bottomNavigationBar: (!isWide || isPortrait)
           ? NavigationBar(
               selectedIndex: _selectedIndex,
-              onDestinationSelected: (idx) => setState(() => _selectedIndex = idx),
+              onDestinationSelected: (idx) =>
+                  setState(() => _selectedIndex = idx),
               destinations: const [
-                NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Status'),
+                NavigationDestination(
+                  icon: Icon(Icons.dashboard_outlined),
+                  selectedIcon: Icon(Icons.dashboard),
+                  label: 'Status',
+                ),
                 NavigationDestination(icon: Icon(Icons.language), label: 'Web'),
-                NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+                NavigationDestination(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
               ],
             )
           : null,
@@ -294,4 +308,3 @@ class _MainShellState extends State<MainShell> with TrayListener, WindowListener
     super.dispose();
   }
 }
-
