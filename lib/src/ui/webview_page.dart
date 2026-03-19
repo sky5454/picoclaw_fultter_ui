@@ -8,6 +8,7 @@ import 'package:remixicon/remixicon.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_windows/webview_windows.dart' as win_wv;
 import 'dart:io';
+import 'dart:async';
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -26,6 +27,9 @@ class _WebViewPageState extends State<WebViewPage> {
   win_wv.WebviewController? _winController;
   bool _winReady = false;
   bool _winError = false;
+  int _winBlankCount = 0;
+  StreamSubscription? _winLoadingSub;
+  StreamSubscription? _winLoadErrorSub;
 
   bool _isLoading = true;
 
@@ -126,7 +130,8 @@ class _WebViewPageState extends State<WebViewPage> {
       _winController ??= win_wv.WebviewController();
       await _winController!.initialize();
       // Ensure it's focused on load
-      await _winController!.setBackgroundColor(Colors.transparent);
+      // Use an opaque background to avoid GPU/transparent compositing issues
+      await _winController!.setBackgroundColor(Colors.white);
 
       // Disable context menu via script for consistent UX
       try {
@@ -136,7 +141,10 @@ class _WebViewPageState extends State<WebViewPage> {
       } catch (_) {}
 
       // Listen for loading state and errors to detect blank/frozen views
-      _winController!.loadingState.listen((state) {
+      // Save subscriptions so we can cancel them on reinit/dispose to avoid leaks
+      _winLoadingSub?.cancel();
+      _winLoadErrorSub?.cancel();
+      _winLoadingSub = _winController!.loadingState.listen((state) {
         if (!mounted) return;
         if (state == win_wv.LoadingState.loading) {
           setState(() => _isLoading = true);
@@ -166,8 +174,27 @@ class _WebViewPageState extends State<WebViewPage> {
                   _winReady = len > 0 && readyStr == 'complete';
                 });
               }
-              // If still blank, schedule a re-check and optionally reinit
+              // Track consecutive blank observations and attempt recovery
               if (len == 0) {
+                _winBlankCount++;
+                debugPrint('WinWebView blank observed count=$_winBlankCount');
+                // First, try a soft recovery by reloading
+                if (_winBlankCount >= 2) {
+                  debugPrint('WinWebView blank — attempting reload (count=$_winBlankCount)');
+                  try {
+                    await _winController?.reload();
+                  } catch (_) {}
+                }
+                // If reload didn't help after several tries, fully reinit the controller
+                if (_winBlankCount >= 4) {
+                  debugPrint('WinWebView persistent blank — reinitializing controller');
+                  if (mounted) {
+                    await _reinitWindowsWebView();
+                  }
+                  return;
+                }
+
+                // schedule a delayed re-check; if content appears, reset counter
                 Future.delayed(const Duration(milliseconds: 400), () async {
                   try {
                     final len2 =
@@ -178,11 +205,16 @@ class _WebViewPageState extends State<WebViewPage> {
                         ) ??
                         0;
                     debugPrint('WinWebView delayed check bodyLen=$len2');
-                    if (mounted && len2 > 0) {
-                      setState(() => _winReady = true);
+                    if (mounted) {
+                      if (len2 > 0) {
+                        _winBlankCount = 0;
+                        setState(() => _winReady = true);
+                      }
                     }
                   } catch (_) {}
                 });
+              } else {
+                _winBlankCount = 0;
               }
             } catch (e) {
               debugPrint('Error executing script on Win WebView: $e');
@@ -198,7 +230,7 @@ class _WebViewPageState extends State<WebViewPage> {
         }
       });
 
-      _winController!.onLoadError.listen((err) {
+      _winLoadErrorSub = _winController!.onLoadError.listen((err) {
         if (!mounted) return;
         // Mark not ready and allow user to reload
         setState(() {
@@ -221,6 +253,16 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   Future<void> _reinitWindowsWebView() async {
+    // Cancel subscriptions and dispose previous controller to avoid leaks
+    try {
+      await _winLoadingSub?.cancel();
+    } catch (_) {}
+    _winLoadingSub = null;
+    try {
+      await _winLoadErrorSub?.cancel();
+    } catch (_) {}
+    _winLoadErrorSub = null;
+
     try {
       await _winController?.dispose();
     } catch (_) {}
@@ -229,8 +271,27 @@ class _WebViewPageState extends State<WebViewPage> {
       _winReady = false;
       _isLoading = true;
       _winError = false;
+      _winBlankCount = 0;
     });
     await _initWindowsWebView();
+  }
+
+  @override
+  void dispose() {
+    // Cancel subscriptions and dispose controller to avoid resource leaks
+    try {
+      _winLoadingSub?.cancel();
+    } catch (_) {}
+    _winLoadingSub = null;
+    try {
+      _winLoadErrorSub?.cancel();
+    } catch (_) {}
+    _winLoadErrorSub = null;
+    try {
+      _winController?.dispose();
+    } catch (_) {}
+    _winController = null;
+    super.dispose();
   }
 
   @override
@@ -368,10 +429,8 @@ class _WebViewPageState extends State<WebViewPage> {
       );
     }
 
-    // If running but controller not initialized (e.g. just started)
-    if (Platform.isWindows && !_winReady && _isLoading) {
-      _initWindowsWebView();
-    }
+    // If running but controller not initialized, initialization happens
+    // from initState or service events — avoid calling init from build().
 
     if (Platform.isWindows) {
       return _winReady
