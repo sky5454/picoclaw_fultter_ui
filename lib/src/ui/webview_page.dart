@@ -57,13 +57,20 @@ class _WebViewPageState extends State<WebViewPage> {
               // Basic finished event may fire before meaningful render.
               // Probe page state using JS to detect empty/blank content.
               try {
-                final ready = await _mobileController!.runJavaScriptReturningResult('document.readyState');
-                final bodyLen = await _mobileController!.runJavaScriptReturningResult('document.body ? document.body.innerText.length : 0');
+                final ready = await _mobileController!
+                    .runJavaScriptReturningResult('document.readyState');
+                final bodyLen = await _mobileController!
+                    .runJavaScriptReturningResult(
+                      'document.body ? document.body.innerText.length : 0',
+                    );
                 // runJavaScriptReturningResult may return a quoted string, normalize it
                 String readyStr = ready.toString();
                 readyStr = readyStr.replaceAll('"', '');
-                final len = int.tryParse(bodyLen.toString().replaceAll('"', '')) ?? 0;
-                debugPrint('WebView finished: ready=$readyStr bodyLen=$len url=$url');
+                final len =
+                    int.tryParse(bodyLen.toString().replaceAll('"', '')) ?? 0;
+                debugPrint(
+                  'WebView finished: ready=$readyStr bodyLen=$len url=$url',
+                );
                 if (len == 0 || readyStr != 'complete') {
                   // keep showing loading state briefly and attempt a secondary check
                   setState(() {
@@ -71,7 +78,13 @@ class _WebViewPageState extends State<WebViewPage> {
                   });
                   Future.delayed(const Duration(milliseconds: 300), () async {
                     try {
-                      final len2 = int.tryParse((await _mobileController!.runJavaScriptReturningResult('document.body ? document.body.innerText.length : 0')).toString().replaceAll('"', '')) ?? 0;
+                      final len2 =
+                          int.tryParse(
+                            (await _mobileController!.runJavaScriptReturningResult(
+                              'document.body ? document.body.innerText.length : 0',
+                            )).toString().replaceAll('"', ''),
+                          ) ??
+                          0;
                       debugPrint('WebView second check bodyLen=$len2');
                       if (mounted) {
                         setState(() => _isLoading = len2 == 0);
@@ -88,11 +101,11 @@ class _WebViewPageState extends State<WebViewPage> {
                   }
                 }
               } catch (e) {
-                  debugPrint('Error probing webview JS: $e');
-                  if (mounted) {
-                    setState(() => _isLoading = false);
-                  }
+                debugPrint('Error probing webview JS: $e');
+                if (mounted) {
+                  setState(() => _isLoading = false);
                 }
+              }
             },
             onWebResourceError: (err) {
               debugPrint('WebView resource error: ${err.description}');
@@ -130,13 +143,23 @@ class _WebViewPageState extends State<WebViewPage> {
         } else if (state == win_wv.LoadingState.navigationCompleted) {
           // navigationCompleted may not guarantee meaningful paint; probe DOM
           Future.microtask(() async {
-              try {
-                // Try to query document.readyState and body length via ExecuteScript
-                final ready = await _winController!.executeScript('document.readyState');
-                final bodyLenRaw = await _winController!.executeScript('document.body ? document.body.innerText.length : 0');
-                String readyStr = ready.toString().replaceAll('"', '');
-                final len = int.tryParse((bodyLenRaw ?? '0').toString().replaceAll('"', '')) ?? 0;
-              debugPrint('WinWebView navigationCompleted ready=$readyStr bodyLen=$len');
+            try {
+              // Try to query document.readyState and body length via ExecuteScript
+              final ready = await _winController!.executeScript(
+                'document.readyState',
+              );
+              final bodyLenRaw = await _winController!.executeScript(
+                'document.body ? document.body.innerText.length : 0',
+              );
+              String readyStr = ready.toString().replaceAll('"', '');
+              final len =
+                  int.tryParse(
+                    (bodyLenRaw ?? '0').toString().replaceAll('"', ''),
+                  ) ??
+                  0;
+              debugPrint(
+                'WinWebView navigationCompleted ready=$readyStr bodyLen=$len',
+              );
               if (mounted) {
                 setState(() {
                   _isLoading = false;
@@ -147,7 +170,13 @@ class _WebViewPageState extends State<WebViewPage> {
               if (len == 0) {
                 Future.delayed(const Duration(milliseconds: 400), () async {
                   try {
-                    final len2 = int.tryParse((await _winController!.executeScript('document.body ? document.body.innerText.length : 0')).toString().replaceAll('"', '')) ?? 0;
+                    final len2 =
+                        int.tryParse(
+                          (await _winController!.executeScript(
+                            'document.body ? document.body.innerText.length : 0',
+                          )).toString().replaceAll('"', ''),
+                        ) ??
+                        0;
                     debugPrint('WinWebView delayed check bodyLen=$len2');
                     if (mounted && len2 > 0) {
                       setState(() => _winReady = true);
@@ -160,7 +189,8 @@ class _WebViewPageState extends State<WebViewPage> {
               if (mounted) {
                 setState(() {
                   _isLoading = false;
-                  _winReady = true; // fallback to true to show view; user can reload if blank
+                  _winReady =
+                      true; // fallback to true to show view; user can reload if blank
                 });
               }
             }
@@ -209,7 +239,7 @@ class _WebViewPageState extends State<WebViewPage> {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
-    // 顶部操作栏按钮
+    // Top action bar buttons
     Widget buildWebViewActions({
       required VoidCallback? onBack,
       required VoidCallback? onForward,
@@ -347,13 +377,13 @@ class _WebViewPageState extends State<WebViewPage> {
       return _winReady
           ? Stack(
               children: [
-                // WebView 区域
+                // WebView area
                 MouseRegion(
                   onEnter: (_) {},
                   child: Listener(
                     onPointerSignal: (event) {},
                     onPointerDown: (event) {
-                      // 屏蔽右键菜单
+                      // Block right-click context menu
                       if (event.kind == PointerDeviceKind.mouse &&
                           event.buttons == kSecondaryMouseButton) {
                         // do nothing, just block
@@ -362,7 +392,7 @@ class _WebViewPageState extends State<WebViewPage> {
                     child: win_wv.Webview(_winController!),
                   ),
                 ),
-                // 顶部操作栏 (Windows 控制器没有 canGoBack/canGoForward 接口，直接调用导航方法)
+                // Top action bar (Windows controller lacks canGoBack/canGoForward; call navigation methods directly)
                 buildWebViewActions(
                   onBack: () {
                     _winController?.goBack();
@@ -436,7 +466,7 @@ class _WebViewPageState extends State<WebViewPage> {
             onPointerDown: (event) {
               if (event.kind == PointerDeviceKind.mouse &&
                   event.buttons == kSecondaryMouseButton) {
-                // 屏蔽右键菜单
+                // Block right-click context menu
               }
             },
             child: _mobileController == null
@@ -446,7 +476,7 @@ class _WebViewPageState extends State<WebViewPage> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : const SizedBox.shrink(),
-          // 顶部操作栏
+          // Top action bar
           buildWebViewActions(
             onBack: () async {
               if (_mobileController != null &&

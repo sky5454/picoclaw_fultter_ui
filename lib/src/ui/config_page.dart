@@ -110,7 +110,9 @@ class _ConfigPageState extends State<ConfigPage> {
                 );
 
                 if (mounted) {
-                  messenger.showSnackBar(SnackBar(content: Text(savedL10n.save)));
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(savedL10n.save)),
+                  );
                 }
               }
             },

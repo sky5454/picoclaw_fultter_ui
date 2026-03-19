@@ -27,7 +27,8 @@ Future<void> initializeBackgroundService() async {
 
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
     }
   } catch (e) {
@@ -69,7 +70,7 @@ void onStart(ServiceInstance service) async {
       service.setAsBackgroundService();
     });
   }
-  
+
   service.on('stopService').listen((event) {
     service.stopSelf();
   });
