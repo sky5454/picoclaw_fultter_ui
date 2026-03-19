@@ -1,0 +1,73 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Verify VS toolchain
+        shell: powershell
+        run: |
+          Write-Output "Checking MSVC/MSBuild and NuGet availability"
+          msbuild -version
+          cl.exe /?
+          if (-not (Get-Command nuget -ErrorAction SilentlyContinue)) {
+            Write-Output "NuGet not found, installing via choco"
+            choco install nuget.commandline -y
+          } else {
+            Write-Output "NuGet found"
+          }
+          nuget.exe help
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Verify VS toolchain
+        shell: powershell
+        run: |
+          Write-Output "--- Verify MSVC / MSBuild / NuGet ---"
+          msbuild -version
+          if (Get-Command cl.exe -ErrorAction SilentlyContinue) { cl.exe /? } else { Write-Output 'cl.exe not found' }
+          if (-not (Get-Command nuget -ErrorAction SilentlyContinue)) { choco install nuget.commandline -y } 
+          nuget help
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Zip Release
+        shell: powershell
+        run: |
+          Compress-Archive -Path 'build\\windows\\x64\\runner\\Release\\*' -DestinationPath 'picoclaw_flutter_ui-release.zip' -Force
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: windows-release-${{ github.run_number }}
+          release_name: Windows release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./picoclaw_flutter_ui-release.zip
+          asset_name: picoclaw_flutter_ui-release.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
