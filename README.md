@@ -1,15 +1,15 @@
 # PicoClaw Flutter UI
 
-A professional, modern, and high-performance cross-platform UI client for managing the `picoclaw` service. Designed for the 2026 technical aesthetic, focusing on clarity, accessibility, and high contrast.
+A modern cross-platform UI client for managing the `picoclaw` service. Designed for clarity, accessibility, and high contrast.
 
 ## ✨ Key Features
 
-- **2026 Minimalist Tech Aesthetic**: Glassmorphism dashboard with high-impact typography (`Inter` & `Fira Code`).
-- **High-Impact Control Center**: Large, accessible action buttons optimized for TV, Desktop, and Mobile.
-- **Multi-Theme System**: 6 professional color palettes (Carbon, Slate, Obsidian, Ebony, Nord, and the WCAG-compliant **SAKURA**).
-- **Advanced Dashboard**: Real-time log monitoring with infinite scroll and QR code endpoint sharing.
-- **Smart WebView Integration**: Embedded network management with "Not Started" guidance and easy navigation.
-- **System Integration**: Native Windows tray support, single-instance enforcement, and port conflict resolution.
+- **Minimalist Dashboard**: Clean interface with high-impact typography.
+- **Accessible Controls**: Large action buttons optimized for Desktop and Mobile/TV usage.
+- **Multiple Color Themes**: Includes 6 professional palettes (Carbon, Slate, Obsidian, Ebony, Nord, and SAKURA).
+- **Log Monitoring**: Real-time log display with history management.
+- **WebView Integration**: Embedded web management interface with status-aware guidance.
+- **Desktop Ready**: Windows tray support, single-instance enforcement, and port conflict resolution.
 
 ## 📸 Screenshots
 
