@@ -78,10 +78,27 @@ class _ConfigPageState extends State<ConfigPage> {
                 ),
               ),
               const SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: _pickFile,
-                icon: const Icon(Icons.folder_open),
-                label: Text(l10n.browse),
+              Builder(
+                builder: (ctx) {
+                  final cs = Theme.of(ctx).colorScheme;
+                  return ElevatedButton.icon(
+                    onPressed: _pickFile,
+                    icon: const Icon(Icons.folder_open),
+                    label: Text(l10n.browse),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: cs.primary,
+                      foregroundColor: cs.onPrimary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -94,29 +111,46 @@ class _ConfigPageState extends State<ConfigPage> {
             ),
           ),
           const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () async {
-              final port = int.tryParse(_portController.text);
-              if (port != null) {
-                // Capture context-derived objects before async gap
-                final messenger = ScaffoldMessenger.of(context);
-                final savedL10n = AppLocalizations.of(context)!;
+          Builder(
+            builder: (ctx) {
+              final cs = Theme.of(ctx).colorScheme;
+              return ElevatedButton(
+                onPressed: () async {
+                  final port = int.tryParse(_portController.text);
+                  if (port != null) {
+                    // Capture context-derived objects before async gap
+                    final messenger = ScaffoldMessenger.of(context);
+                    final savedL10n = AppLocalizations.of(context)!;
 
-                await service.updateConfig(
-                  _hostController.text,
-                  port,
-                  binaryPath: _pathController.text,
-                  arguments: _argsController.text,
-                );
+                    await service.updateConfig(
+                      _hostController.text,
+                      port,
+                      binaryPath: _pathController.text,
+                      arguments: _argsController.text,
+                    );
 
-                if (mounted) {
-                  messenger.showSnackBar(
-                    SnackBar(content: Text(savedL10n.save)),
-                  );
-                }
-              }
+                    if (mounted) {
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(savedL10n.save)),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cs.secondary,
+                  foregroundColor: cs.onSecondary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(l10n.save),
+              );
             },
-            child: Text(l10n.save),
           ),
           const SizedBox(height: 32),
           const Divider(),
